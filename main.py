@@ -24,7 +24,7 @@ class Car(pg.sprite.Sprite):
         super(Car, self).__init__()
         self.image = pg.image.load(("auto1.png"))
         self.rect = self.image.get_rect()
-        self.rect.centery = Window_height /2
+        self.rect.centery = Window_height / 2
         self.rect.centerx = Window_width / 2
 
     def moveRight(self, pixels):
