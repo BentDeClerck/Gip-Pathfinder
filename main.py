@@ -5,6 +5,10 @@ from pygame import surface
 from pygame.constants import K_ESCAPE
 from pygame.draw import rect
 
+#Variables#
+Row = 10
+Colom = 10
+
 # Setup #
 pg.init()
 
@@ -16,7 +20,7 @@ pg.display.set_caption("Pathfinding")
 clock = pg.time.Clock()
 clock.tick(60)
 
-background = pg.image.load("track1.png")
+grid = [[0 for x in range(Row)] for y in range(Colom)]
 
 # run loop #
 run=True
