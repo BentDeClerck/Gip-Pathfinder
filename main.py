@@ -1,9 +1,11 @@
-import pygame as pg
+import pygame 
+import math
 from pygame import display
 from pygame import surface
 from pygame.constants import K_ESCAPE
 from pygame.draw import rect
 
+print('Whats up nigga')
 # Setup #
 pg.init()
 
