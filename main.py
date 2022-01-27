@@ -16,8 +16,6 @@ pg.display.set_caption("Pathfinding")
 clock = pg.time.Clock()
 clock.tick(60)
 
-background = pg.image.load("track1.png")
-
 # run loop #
 run=True
 while run:
