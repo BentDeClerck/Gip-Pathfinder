@@ -28,5 +28,3 @@ while run:
     keys = pg.key.get_pressed()
     if keys[K_ESCAPE]:
         run=False
-
-  
