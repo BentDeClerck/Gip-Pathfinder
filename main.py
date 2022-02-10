@@ -35,18 +35,21 @@ clock.tick(60)
 run=True
 
 while run:
+    pg.display.update()
 
     for event in pg.event.get():
-		if event.type == pg.KEYDOWN:	     
-		keys = pg.key.get_pressed()
-        
-    		if keys[K_ESCAPE]:
-        		pg.quit()
-				sys.exit()
+        if event.type == pg.QUIT:
+            run = False
+            pg.quit()
+            sys.exit()
+            pg.display.update()
 
-    	if event.type == pg.QUIT:
-			pg.quit()
-			sys.exit()    
+    keys = pg.key.get_pressed()
+    if keys[K_ESCAPE]:
+        run=False
+        pg.quit()
+        sys.exit()
+        pg.display.update()
 
     pg.display.update()
   
