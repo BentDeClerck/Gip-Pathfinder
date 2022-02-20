@@ -1,10 +1,14 @@
+from shutil import move
+from turtle import right
 import pygame as pg
 import math
 import sys
 from pygame import display
 from pygame import surface
-from pygame.constants import K_ESCAPE
+from pygame.locals import *
 from pygame.draw import rect
+from pygame.constants import K_ESCAPE
+from pygame.constants import K_r
 
 #Variables#
 Row = 10
@@ -37,14 +41,20 @@ pg.display.set_caption("Path Of Exile")
 clock = pg.time.Clock()
 clock.tick(FPS)
 
-#Dweller of the deep end#
+moving = False
+Left = 1
+Right = 3
+LEFT = False
+RIGHT = False
+
+# Draw Grid #
 def drawGrid():
     for x in range(0, Window_width, BlockSize):
         for y in range(0, Window_height, BlockSize):
             rect = pg.Rect(x, y, BlockSize, BlockSize)
             pg.draw.rect(Window, BLACK, rect, 1)
             
-#De burning man#
+# Color The Grid #
 def ColorGrid (row, colom):
     Coord_x = (row - 1) * BlockSize
     Coord_y = (colom - 1) * BlockSize
@@ -53,14 +63,23 @@ def ColorGrid (row, colom):
     rect_green = pg.Rect(Coord_x, Coord_y, BlockSize, BlockSize)
     image.fill(GREEN, rect_green)
 
-#The touch of innocence#
+# Color White #
+def WhiteGrid (row, colom):
+    Coord_x = (row - 1) * BlockSize
+    Coord_y = (colom - 1) * BlockSize
+    print("coord X:", Coord_x, "Coord Y:", Coord_y) 
+
+    rect_green = pg.Rect(Coord_x, Coord_y, BlockSize, BlockSize)
+    image.fill(WHITE, rect_green)
+
+# Reset Grid #
 def resetGrid():
     Window.fill(WHITE)
     Surface.fill(WHITE)
     drawGrid()
     pg.display.update()
 
-# run loop #
+# Run Loop #
 run=True
 
 while run:
@@ -77,7 +96,35 @@ while run:
         if event.type == pg.K_r:
             resetGrid()
 
-        elif event.type == pg.MOUSEBUTTONDOWN:
+        elif event.type == pg.MOUSEBUTTONDOWN and event.button == Left:
+            pos = pg.mouse.get_pos()
+            row = (pos[0] // BlockSize) + 1
+            colom = (pos[1] // BlockSize) + 1
+            moving = True
+            LEFT = True
+            RIGHT = False
+
+            ColorGrid(row, colom)
+            print("Click ", pos, "Grid coordinates: ", row, colom)
+            print(moving)
+
+        elif event.type == pg.MOUSEBUTTONDOWN and event.button == Right:
+            pos = pg.mouse.get_pos()
+            row = (pos[0] // BlockSize) + 1
+            colom = (pos[1] // BlockSize) + 1
+            moving = True
+            LEFT = False
+            RIGHT = True
+
+            WhiteGrid(row, colom)
+            print("Click ", pos, "Grid coordinates: ", row, colom)
+            print(moving)
+
+        elif event.type == pg.MOUSEBUTTONUP:
+            moving = False
+            print(moving)
+
+        elif event.type == pg.MOUSEMOTION and moving and LEFT:
             pos = pg.mouse.get_pos()
             row = (pos[0] // BlockSize) + 1
             colom = (pos[1] // BlockSize) + 1
@@ -85,6 +132,14 @@ while run:
             ColorGrid(row, colom)
             print("Click ", pos, "Grid coordinates: ", row, colom)
         
+        elif event.type == pg.MOUSEMOTION and moving and RIGHT:
+            pos = pg.mouse.get_pos()
+            row = (pos[0] // BlockSize) + 1
+            colom = (pos[1] // BlockSize) + 1
+
+            WhiteGrid(row, colom)
+            print("Click ", pos, "Grid coordinates: ", row, colom)
+
     keys = pg.key.get_pressed()
     if keys[K_ESCAPE]:
         run=False
