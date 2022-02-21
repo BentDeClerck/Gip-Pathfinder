@@ -1,5 +1,6 @@
 from shutil import move
 from turtle import right
+from numpy import blackman
 import pygame as pg
 import math
 import sys
@@ -61,7 +62,7 @@ def ColorGrid (row, colom):
     print("coord X:", Coord_x, "Coord Y:", Coord_y) 
 
     rect_green = pg.Rect(Coord_x, Coord_y, BlockSize, BlockSize)
-    image.fill(GREEN, rect_green)
+    image.fill(BLACK, rect_green)
 
 # Color White #
 def WhiteGrid (row, colom):
