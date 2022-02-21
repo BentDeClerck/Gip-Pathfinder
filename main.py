@@ -29,7 +29,6 @@ pg.init()
 
 Window_height =  Colom * BlockSize
 Window_width = Row * BlockSize
-Colored_Block = BlockSize - 1
 
 Window = pg.display.set_mode((Window_width, Window_height))
 Window.fill (WHITE)
