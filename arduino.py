@@ -1,13 +1,12 @@
-import pyfirmata2; from pyfirmata2 import Arduino, util; 
-import serial
+import serial 
 
-board = Arduino(Arduino.AUTODETECT)
-it = pyfirmata2.util.Iterator(board)
-sleeptime = 2
+arduino = serial.Serial(port='COM6', baudrate=115200, timeout=.1)
 
-it.start()
+def write(values):
+    
+    arduino.write(b'values')
+    print(b'values')
+    
 
-def RunArduino():
-    print("ok")
-
-RunArduino()
+write("255,0,1,0,1,255")
+print(arduino.readline()) 
