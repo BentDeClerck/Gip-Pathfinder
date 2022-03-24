@@ -1,42 +1,39 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-
-int EnableA = 10;
-int MotorA1 = 2;
-int MotorA2 = 3;
-
-int EnableB = 9;
-int MotorB1 = 4;
-int MotorB2 = 5;
- 
+#define led 12
 RF24 radio(7, 8); // CE, CSN
+const byte addresses[][6] = {"00001", "00002"};
 
-const byte address[6] = "00001";
+char buf[16];
+String text;
+
 
 void setup() {
-  Serial.begin(9600);
-  pinMode(EnableA, OUTPUT);
-  pinMode(EnableB, OUTPUT);
-  pinMode(MotorA1, OUTPUT);
-  pinMode(MotorA2, OUTPUT);
-  pinMode(MotorB1, OUTPUT);
-  pinMode(MotorB2, OUTPUT);
-  
-  radio.begin();
-  radio.openWritingPipe(address);
+  Serial.begin(115200);
+  Serial.println(radio.begin());
+  radio.openWritingPipe(addresses[1]); // 00001
   radio.setPALevel(RF24_PA_MIN);
-  radio.stopListening();
+  
 }
 
+
 void loop() {
-  analogWrite(EnableA, HIGH);
-  analogWrite(EnableB, HIGH);
-  digitalWrite(MotorA2, LOW);  
-  digitalWrite(MotorA1, HIGH);
+  delay(100);
   
-  const char text[] = "Hello World";
-  radio.write(&text, sizeof(text));
-  Serial.println("Done");
-  delay(1);
+  if (Serial.available() > 2) {
+    text = Serial.readStringUntil('\n');
+    Serial.println(text);
+    text.toCharArray(buf, text.length()+1);
+    
+  }
+  
+  
+  if(radio.write(buf, sizeof(buf))){
+    Serial.println("SENDING " + String(buf));
+  }
+  else{
+    Serial.println("FAILED SENDING " + String(buf));
+  }
+  memset(buf, 0, sizeof(buf));
 }
