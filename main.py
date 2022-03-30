@@ -4,6 +4,7 @@ from numpy import blackman
 import pygame as pg
 import math
 import sys
+from queue import PriorityQueue
 from pygame import display
 from pygame import surface
 from pygame.locals import *
@@ -11,18 +12,21 @@ from pygame.draw import rect
 from pygame.constants import K_ESCAPE
 from pygame.constants import K_r
 
-#Variables#
+# Variables #
 Row = 10
 Colom = 10
 BlockSize = 50
 
 FPS = 60
 
-#Colors#
+# Colors #
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
+LIGHT_GREEN = (144,238,144)
 RED = (255, 0, 0)
+GRAY = (128, 128, 128)
+PURPLE = (165, 137, 193)
 
 # Setup #
 pg.init()
@@ -41,6 +45,7 @@ pg.display.set_caption("Path Of Exile")
 clock = pg.time.Clock()
 clock.tick(FPS)
 
+# Rechter / Linker muisknop #
 moving = False
 Left = 1
 Right = 3
@@ -78,6 +83,56 @@ def resetGrid():
     Surface.fill(WHITE)
     drawGrid()
     pg.display.update()
+
+# A* Class #
+class Node:
+    def__init__(self, rij, kolom, hoogte, breete, total_Rows):
+        self.rij = rij
+        self.kolom = kolom
+        self.x = rij * breete 
+        self.y =  kolom * hoogte
+        self.color = WHITE
+        self.neigbors = []
+        self.hoogte = hoogte
+        self.breete = breete
+        self.total_Rows = total_Rows
+    
+    def get_posision(self):
+        return  self.rij, self.kolom
+
+    def is_closed(self):
+        return self.color == LIGHT_GREEN
+
+    def is_open(self):
+        return self.color == GRAY
+
+    def is_black(self):
+        return self.color == BLACK
+
+    def is_strat(self):
+        return self.color == GREEN
+
+    def is_end(self):
+        return self.color == RED
+
+    def reset(self): 
+        self.color == WHITE
+
+    def make_closed(self):
+        self.color = LIGHT_GREEN
+
+    def make_open(self):
+        self.color = GRAY
+
+    def make_black(self):
+        self.color = BLACK
+
+    def make_end(self):
+        self.color = RED
+    
+    def make_path(self):
+        self.color = PURPLE
+    
 
 # Run Loop #
 run=True
