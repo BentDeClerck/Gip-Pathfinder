@@ -14,7 +14,7 @@ from pygame.constants import K_r
 
 
 # Variables #
-Row = 10
+Row = 12
 Colom = 10
 BlockSize = 50
 
@@ -23,7 +23,7 @@ FPS = 60
 # Colors #
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
+GREEN = (0, 255, 0) 
 LIGHT_GREEN = (144,238,144)
 RED = (255, 0, 0)
 GRAY = (128, 128, 128)
@@ -95,7 +95,7 @@ class Spot:
         self.color = BLACK
     
     def make_start(self):
-        self.color == GREEN
+        self.color = GREEN
 
     def make_end(self):
         self.color = RED
@@ -103,9 +103,8 @@ class Spot:
     def make_path(self):
         self.color = PURPLE
 
-    def draw(self, Window):
-        rect = pg.Rect(self.x, self.y, BlockSize, BlockSize)
-        pg.draw.rect(Window, self.color, rect, 1)
+    def draw(self):
+        pg.draw.rect(Window, self.color, (self.x, self.y, BlockSize, BlockSize))
 
     def update_neighbors(self, grid):
         pass
@@ -121,20 +120,18 @@ def h(p1, p2):
 def make_grid():
     grid = []
 
-    for i in range(0, Window_width, BlockSize):
+    for i in range(Row):
         grid.append([])
-        for j in range(0, Window_height, BlockSize):
-            rect = pg.Rect(i, j, BlockSize, BlockSize)
-            pg.draw.rect(Window, BLACK, rect, 1)
+        for j in range(Colom):
             spot = Spot(i, j, Row, Colom)
-            grid.append(spot)
+            grid[i].append(spot)
 
     return grid       
 
 def draw_grid():
-    for i in range(0, Window_width, BlockSize):
+    for i in range(Row):
         pg.draw.line(Window, GRAY, (0, i * BlockSize), (Window_width, i * BlockSize))
-        for j in range(0, Window_height, BlockSize):
+        for j in range(Colom):
             pg.draw.line(Window, GRAY, (j * BlockSize, 0), (j * BlockSize, Window_height))
 
 def draw(grid):
@@ -178,7 +175,7 @@ def main():
                 rij, kolom = get_clicked_pos(pos)
                 spot = grid[rij][kolom]
 
-                if not start :
+                if not start:
                     start = spot
                     start.make_start()
 
