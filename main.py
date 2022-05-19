@@ -54,37 +54,37 @@ class Spot:
         return  self.rij, self.kolom
 
     def is_closed(self):
-        return self.color == LIGHT_GREEN
+        return self.color == RED
 
     def is_open(self):
-        return self.color == GRAY
+        return self.color == GREEN
 
     def is_black(self):
         return self.color == BLACK
 
     def is_start(self):
-        return self.color == GREEN
+        return self.color == LIGHT_GREEN
 
     def is_end(self):
-        return self.color == RED
+        return self.color == GRAY
 
     def reset(self): 
         self.color = WHITE
 
-    def make_closed(self):
+    def make_start(self):
         self.color = LIGHT_GREEN
 
+    def make_closed(self):
+        self.color = RED
+
     def make_open(self):
-        self.color = GRAY
+        self.color = GREEN
 
     def make_black(self):
         self.color = BLACK
-    
-    def make_start(self):
-        self.color = GREEN
 
     def make_end(self):
-        self.color = RED
+        self.color = PURPLE
     
     def make_path(self):
         self.color = PURPLE
@@ -129,30 +129,30 @@ def algorithm(draw, grid, start, end):
     open_set_hash = {start}
 
     while not open_set.empty():
-		for event in pg.event.get():
-			if event.type == pg.QUIT:
-				pg.quit()
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
 
-		current = open_set.get()[2]
-		open_set_hash.remove(current)
+        current = open_set.get()[2]
+        open_set_hash.remove(current)
 
-		if current == end:
-			return True
+        if current == end:
+            return True
 
-		for neighbor in current.neighbors:
-			temp_g_score = g_score[current] + 1
+        for neighbor  in current.neighbors:
+            temp_g_score = g_score[current] + 1
 
-			if temp_g_score < g_score[neighbor]:
-				came_from[neighbor] = current
-				g_score[neighbor] = temp_g_score
-				f_score[neighbor] = temp_g_score + h(neighbor.get_pos(), end.get_pos())
+            if temp_g_score < g_score[neighbor]:
+                came_from[neighbor] = current
+                g_score[neighbor] = temp_g_score
+                f_score[neighbor] = temp_g_score + h(neighbor.get_pos(), end.get_pos())
 				
-				if neighbor not in open_set_hash:
-					count += 1
-					open_set.put((f_score[neighbor], count, neighbor))
-					open_set_hash.add(neighbor)
-					neighbor.make_open()
-        
+                if neighbor not in open_set_hash:
+                    count += 1
+                    open_set.put((f_score[neighbor], count, neighbor))
+                    open_set_hash.add(neighbor)
+                    neighbor.make_open()
+
         draw()
 
         if current != start:
