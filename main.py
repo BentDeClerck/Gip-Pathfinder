@@ -1,6 +1,6 @@
 from shutil import move
 from tkinter.font import ROMAN
-from turtle import right
+from turtle import right, st
 from numpy import blackman
 import pygame as pg
 import math
@@ -12,7 +12,6 @@ from pygame.locals import *
 from pygame.draw import rect
 from pygame.constants import K_ESCAPE
 from pygame.constants import K_r
-
 
 # Variables #
 Row = 15
@@ -37,14 +36,7 @@ Window_height =  Colom * BlockSize
 Window_width = Row * BlockSize
 
 Window = pg.display.set_mode((Window_width, Window_height))
-#Surface = pg.display.set_mode((Window_height, Window_width))
-#Surface.fill(WHITE)
-
-image = pg.display.get_surface()
 pg.display.set_caption("Path Of Exile")
-
-clock = pg.time.Clock()
-clock.tick(FPS)
            
 # A* Class #
 class Spot:
@@ -54,11 +46,11 @@ class Spot:
         self.x = rij * BlockSize 
         self.y =  kolom * BlockSize
         self.color = WHITE
-        self.neigbors = []
+        self.neighbors = []
         self.total_Rows = total_Rows
         self.total_Col = total_Col
     
-    def get_posision(self):
+    def get_pos(self):
         return  self.rij, self.kolom
 
     def is_closed(self):
@@ -101,7 +93,19 @@ class Spot:
         pg.draw.rect(Window, self.color, (self.x, self.y, BlockSize, BlockSize))
 
     def update_neighbors(self, grid):
-        pass
+        self.neigbors = []
+
+        if self.rij < self.total_Rows - 1 and not grid[self.rij + 1][self.kolom].is_black(): #Onder
+            self.neigbors.append(grid[self.rij + 1][self.kolom])
+
+        if self.rij > 0 and not grid[self.rij - 1][self.kolom].is_black(): #Boven
+            self.neigbors.append(grid[self.rij - 1][self.kolom])
+
+        if self.kolom < self.total_Rows - 1 and not grid[self.rij][self.kolom + 1].is_black(): #Rechts
+            self.neigbors.append(grid[self.rij][self.kolom + 1])
+
+        if self.kolom > 0 and not grid[self.rij][self.kolom - 1].is_black(): #Links
+            self.neigbors.append(grid[self.rij][self.kolom - 1])
 
     def __Lt__(self, other):
         return False
@@ -110,6 +114,51 @@ def h(p1, p2):
     x1, y1 = p1
     x2, y2 = p2
     return abs(x1 - x2) + abs(y1 - y2)
+
+def algorithm(draw, grid, start, end):
+    count = 0
+    open_set = PriorityQueue()
+    open_set.put((0, count, start))
+    came_from = {}
+
+    g_score = {spot: float("inf") for row in grid for spot in row}
+    g_score[start] = 0
+    f_score = {spot: float("inf") for row in grid for spot in row}
+    f_score[start] = h(start.get_pos(), end.get_pos())
+
+    open_set_hash = {start}
+
+    while not open_set.empty():
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+        
+        current = open_set.get()[2]
+        open_set_hash.remove(current)
+
+        if current == end:
+            return True
+        
+        for neighbor in current.neighbors:
+            temp_g_score = g_score[current] + 1
+
+            if neighbor in current.neighbors:
+                came_from[neighbor] = current
+                g_score[neighbor] = temp_g_score
+                f_score[neighbor] = temp_g_score + h(neighbor.get_pos(), end.get_pos())
+
+                if neighbor not in open_set_hash:
+                    count += 1
+                    open_set.put((f_score[neighbor], count, neighbor))
+                    open_set_hash.add(neighbor)
+                    neighbor.make_open()
+        
+        draw()
+
+        if current != start:
+            current.make_closed()
+
+        return False
 
 def make_grid():
     grid = []
@@ -192,9 +241,17 @@ def main():
 
                 elif spot == end:
                     end = None
+
             if event.type == pg.KEYDOWN:
-                if event.key == pg.K_SPACE and not started:
-                    pass
+
+                if event.key == pg.K_SPACE and start and end:
+                    for rij in grid:
+                        for spot in rij:
+                            print('lol')
+                            spot.update_neighbors(grid)
+
+                    print('1')
+                    algorithm(lambda: draw(grid), grid, start, end)
                 
                 if event.key == pg.K_ESCAPE:
                     run = False
