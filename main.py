@@ -1,4 +1,5 @@
 from shutil import move
+from tkinter.font import ROMAN
 from turtle import right
 from numpy import blackman
 import pygame as pg
@@ -14,8 +15,8 @@ from pygame.constants import K_r
 
 
 # Variables #
-Row = 12
-Colom = 10
+Row = 15
+Colom = 15
 BlockSize = 50
 
 FPS = 60
@@ -44,13 +45,6 @@ pg.display.set_caption("Path Of Exile")
 
 clock = pg.time.Clock()
 clock.tick(FPS)
-
-# Rechter / Linker muisknop #
-#moving = False
-#Left = 1
-#Right = 3
-#LEFT = False
-#RIGHT = False
            
 # A* Class #
 class Spot:
@@ -83,7 +77,7 @@ class Spot:
         return self.color == RED
 
     def reset(self): 
-        self.color == WHITE
+        self.color = WHITE
 
     def make_closed(self):
         self.color = LIGHT_GREEN
@@ -129,9 +123,10 @@ def make_grid():
     return grid       
 
 def draw_grid():
-    for i in range(Row):
+
+    for i in range(Colom):
         pg.draw.line(Window, GRAY, (0, i * BlockSize), (Window_width, i * BlockSize))
-        for j in range(Colom):
+        for j in range(Row):
             pg.draw.line(Window, GRAY, (j * BlockSize, 0), (j * BlockSize, Window_height))
 
 def draw(grid):
@@ -175,11 +170,11 @@ def main():
                 rij, kolom = get_clicked_pos(pos)
                 spot = grid[rij][kolom]
 
-                if not start:
+                if not start and spot != end:
                     start = spot
                     start.make_start()
 
-                elif not end:
+                elif not end and spot != start:
                     end = spot
                     end.make_end()
 
@@ -187,7 +182,22 @@ def main():
                     spot.make_black()
 
             elif pg.mouse.get_pressed()[2]:
-                pass
+                pos = pg.mouse.get_pos()
+                rij, kolom = get_clicked_pos(pos)
+                spot = grid[rij][kolom]
+                spot.reset()
+
+                if spot == start:
+                    start = None
+
+                elif spot == end:
+                    end = None
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_SPACE and not started:
+                    pass
+                
+                if event.key == pg.K_ESCAPE:
+                    run = False
 
     pg.quit()       
 
