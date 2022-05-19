@@ -12,6 +12,7 @@ from pygame.draw import rect
 from pygame.constants import K_ESCAPE
 from pygame.constants import K_r
 
+
 # Variables #
 Row = 10
 Colom = 10
@@ -35,9 +36,8 @@ Window_height =  Colom * BlockSize
 Window_width = Row * BlockSize
 
 Window = pg.display.set_mode((Window_width, Window_height))
-Window.fill (WHITE)
-Surface = pg.display.set_mode((Window_height, Window_width))
-Surface.fill(WHITE)
+#Surface = pg.display.set_mode((Window_height, Window_width))
+#Surface.fill(WHITE)
 
 image = pg.display.get_surface()
 pg.display.set_caption("Path Of Exile")
@@ -46,56 +46,23 @@ clock = pg.time.Clock()
 clock.tick(FPS)
 
 # Rechter / Linker muisknop #
-moving = False
-Left = 1
-Right = 3
-LEFT = False
-RIGHT = False
-
-# Draw Grid #
-def drawGrid():
-    for x in range(0, Window_width, BlockSize):
-        for y in range(0, Window_height, BlockSize):
-            rect = pg.Rect(x, y, BlockSize, BlockSize)
-            pg.draw.rect(Window, BLACK, rect, 1)
-            
-# Color The Grid #
-def ColorGrid (row, colom):
-    Coord_x = (row - 1) * BlockSize
-    Coord_y = (colom - 1) * BlockSize
-    print("coord X:", Coord_x, "Coord Y:", Coord_y) 
-
-    rect_green = pg.Rect(Coord_x, Coord_y, BlockSize, BlockSize)
-    image.fill(BLACK, rect_green)
-
-# Color White #
-def WhiteGrid (row, colom):
-    Coord_x = (row - 1) * BlockSize
-    Coord_y = (colom - 1) * BlockSize
-    print("coord X:", Coord_x, "Coord Y:", Coord_y) 
-
-    rect_green = pg.Rect(Coord_x, Coord_y, BlockSize, BlockSize)
-    image.fill(WHITE, rect_green)
-
-# Reset Grid #
-def resetGrid():
-    Window.fill(WHITE)
-    Surface.fill(WHITE)
-    drawGrid()
-    pg.display.update()
-
+#moving = False
+#Left = 1
+#Right = 3
+#LEFT = False
+#RIGHT = False
+           
 # A* Class #
-class Node:
-    def__init__(self, rij, kolom, hoogte, breete, total_Rows):
+class Spot:
+    def __init__ (self, rij, kolom, total_Rows, total_Col):
         self.rij = rij
         self.kolom = kolom
-        self.x = rij * breete 
-        self.y =  kolom * hoogte
+        self.x = rij * BlockSize 
+        self.y =  kolom * BlockSize
         self.color = WHITE
         self.neigbors = []
-        self.hoogte = hoogte
-        self.breete = breete
         self.total_Rows = total_Rows
+        self.total_Col = total_Col
     
     def get_posision(self):
         return  self.rij, self.kolom
@@ -109,7 +76,7 @@ class Node:
     def is_black(self):
         return self.color == BLACK
 
-    def is_strat(self):
+    def is_start(self):
         return self.color == GREEN
 
     def is_end(self):
@@ -126,83 +93,105 @@ class Node:
 
     def make_black(self):
         self.color = BLACK
+    
+    def make_start(self):
+        self.color == GREEN
 
     def make_end(self):
         self.color = RED
     
     def make_path(self):
         self.color = PURPLE
-    
 
-# Run Loop #
-run=True
+    def draw(self, Window):
+        rect = pg.Rect(self.x, self.y, BlockSize, BlockSize)
+        pg.draw.rect(Window, self.color, rect, 1)
 
-while run:
-    drawGrid()
+    def update_neighbors(self, grid):
+        pass
+
+    def __Lt__(self, other):
+        return False
+
+def h(p1, p2):
+    x1, y1 = p1
+    x2, y2 = p2
+    return abs(x1 - x2) + abs(y1 - y2)
+
+def make_grid():
+    grid = []
+
+    for i in range(0, Window_width, BlockSize):
+        grid.append([])
+        for j in range(0, Window_height, BlockSize):
+            rect = pg.Rect(i, j, BlockSize, BlockSize)
+            pg.draw.rect(Window, BLACK, rect, 1)
+            spot = Spot(i, j, Row, Colom)
+            grid.append(spot)
+
+    return grid       
+
+def draw_grid():
+    for i in range(0, Window_width, BlockSize):
+        pg.draw.line(Window, GRAY, (0, i * BlockSize), (Window_width, i * BlockSize))
+        for j in range(0, Window_height, BlockSize):
+            pg.draw.line(Window, GRAY, (j * BlockSize, 0), (j * BlockSize, Window_height))
+
+def draw(grid):
+    Window.fill(WHITE)
+
+    for rij in grid:
+        for spot in rij:
+            spot.draw()
+
+    draw_grid()
     pg.display.update()
 
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            run = False
-            pg.quit()
-            sys.exit()
-            pg.display.update()
+def get_clicked_pos(pos):
+    y, x = pos
 
-        if event.type == pg.K_r:
-            resetGrid()
+    row = y // BlockSize
+    col = x // BlockSize
 
-        elif event.type == pg.MOUSEBUTTONDOWN and event.button == Left:
-            pos = pg.mouse.get_pos()
-            row = (pos[0] // BlockSize) + 1
-            colom = (pos[1] // BlockSize) + 1
-            moving = True
-            LEFT = True
-            RIGHT = False
+    return row, col
 
-            ColorGrid(row, colom)
-            print("Click ", pos, "Grid coordinates: ", row, colom)
-            print(moving)
+def main():
+    grid = make_grid()
 
-        elif event.type == pg.MOUSEBUTTONDOWN and event.button == Right:
-            pos = pg.mouse.get_pos()
-            row = (pos[0] // BlockSize) + 1
-            colom = (pos[1] // BlockSize) + 1
-            moving = True
-            LEFT = False
-            RIGHT = True
+    start = None
+    end = None
+    run = True
+    started = False
 
-            WhiteGrid(row, colom)
-            print("Click ", pos, "Grid coordinates: ", row, colom)
-            print(moving)
+    while run:
+        draw(grid)
 
-        elif event.type == pg.MOUSEBUTTONUP:
-            moving = False
-            print(moving)
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                run = False
+            
+            if started:
+                continue
 
-        elif event.type == pg.MOUSEMOTION and moving and LEFT:
-            pos = pg.mouse.get_pos()
-            row = (pos[0] // BlockSize) + 1
-            colom = (pos[1] // BlockSize) + 1
+            if pg.mouse.get_pressed()[0]:
+                pos = pg.mouse.get_pos()
+                rij, kolom = get_clicked_pos(pos)
+                spot = grid[rij][kolom]
 
-            ColorGrid(row, colom)
-            print("Click ", pos, "Grid coordinates: ", row, colom)
-        
-        elif event.type == pg.MOUSEMOTION and moving and RIGHT:
-            pos = pg.mouse.get_pos()
-            row = (pos[0] // BlockSize) + 1
-            colom = (pos[1] // BlockSize) + 1
+                if not start :
+                    start = spot
+                    start.make_start()
 
-            WhiteGrid(row, colom)
-            print("Click ", pos, "Grid coordinates: ", row, colom)
+                elif not end:
+                    end = spot
+                    end.make_end()
 
-    keys = pg.key.get_pressed()
-    if keys[K_ESCAPE]:
-        run=False
-        pg.quit()
-        sys.exit()
-        pg.display.update()
+                elif spot != end and spot != start :
+                    spot.make_black()
 
-    if keys[K_r]:
-        resetGrid()
+            elif pg.mouse.get_pressed()[2]:
+                pass
 
-    pg.display.update()
+    pg.quit()       
+
+main()
