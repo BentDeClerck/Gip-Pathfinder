@@ -6,13 +6,14 @@
 RF24 radio(7, 8); // CE, CSN
 const byte addresses[][6] = {"00001", "00002"};
 
-
-
-
 char buf[16];
 String text;
 
-
+String stationary= "0,0,0,0,0,0";
+String forward = "150,0,1,1,0,150";
+String backward = "150,1,0,0,1,150";
+String right = "150,1,0,1,0,150";
+String left = "150,0,1,0,1,150";
 
 void setup() {
   Serial.begin(115200);

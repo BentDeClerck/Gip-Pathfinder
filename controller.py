@@ -2,7 +2,7 @@ import pynput; from pynput import keyboard; from pynput.keyboard import Listener
 import time
 import serial 
 
-arduino = serial.Serial(port='COM6', baudrate=115200, timeout=0.01)
+arduino = serial.Serial(port='COM3', baudrate=115200, timeout=0.01)
 
         
 
