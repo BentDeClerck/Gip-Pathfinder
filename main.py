@@ -25,6 +25,8 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0) 
 LIGHT_GREEN = (144,238,144)
+LIGHT_BLUE = (173, 216, 230)
+LIGHT_RED = (255, 204, 203)
 RED = (255, 0, 0)
 GRAY = (128, 128, 128)
 PURPLE = (165, 137, 193)
@@ -54,58 +56,58 @@ class Spot:
         return  self.rij, self.kolom
 
     def is_closed(self):
-        return self.color == RED
+        return self.color == LIGHT_GREEN
 
     def is_open(self):
-        return self.color == GREEN
+        return self.color == LIGHT_RED
 
     def is_black(self):
         return self.color == BLACK
 
     def is_start(self):
-        return self.color == LIGHT_GREEN
+        return self.color == GREEN
 
     def is_end(self):
-        return self.color == GRAY
+        return self.color == RED
 
     def reset(self): 
         self.color = WHITE
 
     def make_start(self):
-        self.color = LIGHT_GREEN
+        self.color = GREEN
 
     def make_closed(self):
-        self.color = RED
+        self.color = LIGHT_GREEN
 
     def make_open(self):
-        self.color = GREEN
+        self.color = LIGHT_RED
 
     def make_black(self):
         self.color = BLACK
 
     def make_end(self):
-        self.color = PURPLE
+        self.color = RED
     
     def make_path(self):
-        self.color = PURPLE
+        self.color = LIGHT_BLUE
 
     def draw(self):
         pg.draw.rect(Window, self.color, (self.x, self.y, BlockSize, BlockSize))
 
     def update_neighbors(self, grid):
-        self.neigbors = []
+        self.neighbors = []
 
         if self.rij < self.total_Rows - 1 and not grid[self.rij + 1][self.kolom].is_black(): #Onder
-            self.neigbors.append(grid[self.rij + 1][self.kolom])
+            self.neighbors.append(grid[self.rij + 1][self.kolom])
 
         if self.rij > 0 and not grid[self.rij - 1][self.kolom].is_black(): #Boven
-            self.neigbors.append(grid[self.rij - 1][self.kolom])
+            self.neighbors.append(grid[self.rij - 1][self.kolom])
 
-        if self.kolom < self.total_Rows - 1 and not grid[self.rij][self.kolom + 1].is_black(): #Rechts
-            self.neigbors.append(grid[self.rij][self.kolom + 1])
+        if self.kolom < self.total_Col - 1 and not grid[self.rij][self.kolom + 1].is_black(): #Rechts
+            self.neighbors.append(grid[self.rij][self.kolom + 1])
 
         if self.kolom > 0 and not grid[self.rij][self.kolom - 1].is_black(): #Links
-            self.neigbors.append(grid[self.rij][self.kolom - 1])
+            self.neighbors.append(grid[self.rij][self.kolom - 1])
 
     def __Lt__(self, other):
         return False
@@ -114,6 +116,12 @@ def h(p1, p2):
     x1, y1 = p1
     x2, y2 = p2
     return abs(x1 - x2) + abs(y1 - y2)
+
+def reconstruct_path(came_from, current, draw):
+    while current in came_from:
+        current = came_from[current]
+        current.make_path()
+        draw()
 
 def algorithm(draw, grid, start, end):
     count = 0
@@ -137,6 +145,9 @@ def algorithm(draw, grid, start, end):
         open_set_hash.remove(current)
 
         if current == end:
+            reconstruct_path(came_from, end, draw)
+            end.make_end()
+            start.make_start()
             return True
 
         for neighbor  in current.neighbors:
@@ -158,7 +169,7 @@ def algorithm(draw, grid, start, end):
         if current != start:
             current.make_closed()
 
-        return False
+    return False
 
 def make_grid():
     grid = []
@@ -250,6 +261,11 @@ def main():
                             spot.update_neighbors(grid)
 
                     algorithm(lambda: draw(grid), grid, start, end)
+
+                if event.key == pg.K_c:
+                    start = None
+                    end = None
+                    grid = make_grid()
                 
                 if event.key == pg.K_ESCAPE:
                     run = False
