@@ -80,24 +80,24 @@ void loop() {
       
       
       if (String(text[i]) == "1") {
-        values[0] = 150; values[1] = 0; values[2] = 1; values[3] = 1; values[4] = 0; values[5] = 150; values[6] = 150; values[7] = 0; values[8] = 1; values[9] = 1; values[10] = 0; values[11] = 150;
+        values[0] = 150; values[1] = 0; values[2] = 1; values[3] = 0; values[4] = 1; values[5] = 150; values[6] = 150; values[7] = 0; values[8] = 1; values[9] = 0; values[10] = 1; values[11] = 150;
         analogWrite(EnableA, values[0]); analogWrite(EnableB, values[5]); digitalWrite(MotorA2, values[2]); digitalWrite(MotorA1, values[1]); digitalWrite(MotorB2, values[4]);   digitalWrite(MotorB1, values[3]);
         analogWrite(EnableC, values[6]); analogWrite(EnableD, values[11]); digitalWrite(MotorC2, values[8]); digitalWrite(MotorC1, values[7]); digitalWrite(MotorD2, values[10]);   digitalWrite(MotorD1, values[9]);
       }
       if (String(text[i]) == "2"){
-        values[0] = 150; values[1] = 1; values[2] = 0; values[3] = 0; values[4] = 1; values[5] = 150; values[6] = 150; values[7] = 1; values[8] = 0; values[9] = 0; values[10] = 1; values[11] = 150;
+        values[0] = 150; values[1] = 1; values[2] = 0; values[3] = 1; values[4] = 0; values[5] = 150; values[6] = 150; values[7] = 1; values[8] = 0; values[9] = 1; values[10] = 0; values[11] = 150;
         analogWrite(EnableA, values[0]); analogWrite(EnableB, values[5]); digitalWrite(MotorA2, values[2]); digitalWrite(MotorA1, values[1]); digitalWrite(MotorB2, values[4]);   digitalWrite(MotorB1, values[3]);
         analogWrite(EnableC, values[6]); analogWrite(EnableD, values[11]); digitalWrite(MotorC2, values[8]); digitalWrite(MotorC1, values[7]); digitalWrite(MotorD2, values[10]);   digitalWrite(MotorD1, values[9]);
       }
       
       if (String(text[i]) == "3"){
-        values[0] = 150; values[1] = 0; values[2] = 1; values[3] = 0; values[4] = 0; values[5] = 0; values[6] = 150; values[7] = 1; values[8] = 0; values[9] = 0; values[10] = 0; values[11] = 0;
+        values[0] = 150; values[1] = 1; values[2] = 0; values[3] = 0; values[4] = 1; values[5] = 150; values[6] = 150; values[7] = 0; values[8] = 0; values[9] = 0; values[10] = 0; values[11] = 0;
         analogWrite(EnableA, values[0]); analogWrite(EnableB, values[5]); digitalWrite(MotorA2, values[2]); digitalWrite(MotorA1, values[1]); digitalWrite(MotorB2, values[4]);   digitalWrite(MotorB1, values[3]);
         analogWrite(EnableC, values[6]); analogWrite(EnableD, values[11]); digitalWrite(MotorC2, values[8]); digitalWrite(MotorC1, values[7]); digitalWrite(MotorD2, values[10]);   digitalWrite(MotorD1, values[9]);
       }
       
      
-      delay(1000);
+      delay(750);
     }
    
         

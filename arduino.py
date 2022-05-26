@@ -3,6 +3,7 @@ import time
 
 try:
     arduino = serial.Serial(port='COM3', baudrate=115200, timeout=0.5)
+    time.sleep(2)
 except Exception:
         print("geen connectie met arduino gevonden")
         
@@ -16,5 +17,6 @@ def write(values):
 
 
 
-time.sleep(2)
-write("321321")
+
+write("33")
+# 1 = rechtdoor; 2 = naarachter; 3 = draaien rechts
