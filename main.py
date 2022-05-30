@@ -1,5 +1,6 @@
 from shutil import move
-from turtle import right
+from tkinter.font import ROMAN
+from turtle import right, st
 from numpy import blackman
 import pygame as pg
 import math
@@ -13,15 +14,17 @@ from pygame.constants import K_ESCAPE
 from pygame.constants import K_r
 
 # Variables #
-Row = 10
-Colom = 10
+Row = 15
+Colom = 15
 BlockSize = 50
 
 # Colors #
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
+GREEN = (0, 255, 0) 
 LIGHT_GREEN = (144,238,144)
+LIGHT_BLUE = (173, 216, 230)
+LIGHT_RED = (255, 204, 203)
 RED = (255, 0, 0)
 GRAY = (128, 128, 128)
 PURPLE = (165, 137, 193)
@@ -33,69 +36,21 @@ Window_height =  Colom * BlockSize
 Window_width = Row * BlockSize
 
 Window = pg.display.set_mode((Window_width, Window_height))
-Window.fill (WHITE)
-Surface = pg.display.set_mode((Window_height, Window_width))
-Surface.fill(WHITE)
-
-image = pg.display.get_surface()
 pg.display.set_caption("Path Of Exile")
-
-clock = pg.time.Clock()
-clock.tick(FPS)
-
-# Rechter / Linker muisknop #
-moving = False
-Left = 1
-Right = 3
-LEFT = False
-RIGHT = False
-
-# Draw Grid #
-def drawGrid():
-    for x in range(0, Window_width, BlockSize):
-        for y in range(0, Window_height, BlockSize):
-            rect = pg.Rect(x, y, BlockSize, BlockSize)
-            pg.draw.rect(Window, BLACK, rect, 1)
-            
-# Color The Grid #
-def ColorGrid (row, colom):
-    Coord_x = (row - 1) * BlockSize
-    Coord_y = (colom - 1) * BlockSize
-    print("Coord X:", Coord_x, "Coord Y:", Coord_y) 
-
-    rect_green = pg.Rect(Coord_x, Coord_y, BlockSize, BlockSize)
-    image.fill(BLACK, rect_green)
-
-# Color White #
-def WhiteGrid (row, colom):
-    Coord_x = (row - 1) * BlockSize
-    Coord_y = (colom - 1) * BlockSize
-    print("C             oord X:", Coord_x, "Coord Y:", Coord_y) 
-
-    rect_green = pg.Rect(Coord_x, Coord_y, BlockSize, BlockSize)
-    image.fill(WHITE, rect_green)
-
-# Reset Grid #
-def resetGrid():
-    Window.fill(WHITE)
-    Surface.fill(WHITE)
-    drawGrid()
-    pg.display.update()
-
+           
 # A* Class #
-class Node:
-    def__init__(self, rij, kolom, hoogte, breete, total_Rows):
+class Spot:
+    def __init__ (self, rij, kolom, total_Rows, total_Col):
         self.rij = rij
         self.kolom = kolom
-        self.x = rij * breete 
-        self.y =  kolom * hoogte
+        self.x = rij * BlockSize 
+        self.y =  kolom * BlockSize
         self.color = WHITE
-        self.neigbors = []
-        self.hoogte = hoogte
-        self.breete = breete
+        self.neighbors = []
         self.total_Rows = total_Rows
+        self.total_Col = total_Col
     
-    def get_posision(self):
+    def get_pos(self):
         return  self.rij, self.kolom
 
     def is_closed(self):
@@ -103,16 +58,24 @@ class Node:
 
     def is_open(self):
 <<<<<<< HEAD
+<<<<<<< HEAD
         return self.color == GRAY
 =======
         return self.color == GREEN
 >>>>>>> parent of 640120c (Update main.py)
+=======
+        return self.color == LIGHT_RED
+>>>>>>> parent of be925a0 (k)
 
     def is_black(self):
         return self.color == BLACK
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def is_strat(self):
+=======
+    def is_start(self):
+>>>>>>> parent of be925a0 (k)
         return self.color == GREEN
 =======
     def is_start(self):
@@ -124,7 +87,14 @@ class Node:
 
     def reset(self): 
 <<<<<<< HEAD
+<<<<<<< HEAD
         self.color == WHITE
+=======
+        self.color = WHITE
+
+    def make_start(self):
+        self.color = GREEN
+>>>>>>> parent of be925a0 (k)
 
     def make_closed(self):
 =======
@@ -139,10 +109,14 @@ class Node:
 
     def make_open(self):
 <<<<<<< HEAD
+<<<<<<< HEAD
         self.color = GRAY
 =======
         self.color = GREEN
 >>>>>>> parent of 640120c (Update main.py)
+=======
+        self.color = LIGHT_RED
+>>>>>>> parent of be925a0 (k)
 
     def make_black(self):
         self.color = BLACK
@@ -151,15 +125,20 @@ class Node:
         self.color = PURPLE
     
     def make_path(self):
+<<<<<<< HEAD
         self.color = PURPLE
 <<<<<<< HEAD
     
 =======
 >>>>>>> parent of 640120c (Update main.py)
+=======
+        self.color = LIGHT_BLUE
+>>>>>>> parent of be925a0 (k)
 
-# Run Loop #
-run=True
+    def draw(self):
+        pg.draw.rect(Window, self.color, (self.x, self.y, BlockSize, BlockSize))
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 while run:
     drawGrid()
@@ -178,6 +157,22 @@ while run:
 
         if self.kolom > 0 and not grid[self.rij][self.kolom - 1].is_black(): #Links
             self.neigbors.append(grid[self.rij][self.kolom - 1])
+=======
+    def update_neighbors(self, grid):
+        self.neighbors = []
+
+        if self.rij < self.total_Rows - 1 and not grid[self.rij + 1][self.kolom].is_black(): #Onder
+            self.neighbors.append(grid[self.rij + 1][self.kolom])
+
+        if self.rij > 0 and not grid[self.rij - 1][self.kolom].is_black(): #Boven
+            self.neighbors.append(grid[self.rij - 1][self.kolom])
+
+        if self.kolom < self.total_Col - 1 and not grid[self.rij][self.kolom + 1].is_black(): #Rechts
+            self.neighbors.append(grid[self.rij][self.kolom + 1])
+
+        if self.kolom > 0 and not grid[self.rij][self.kolom - 1].is_black(): #Links
+            self.neighbors.append(grid[self.rij][self.kolom - 1])
+>>>>>>> parent of be925a0 (k)
 
     def __Lt__(self, other):
         return False
@@ -187,6 +182,15 @@ def h(p1, p2):
     x2, y2 = p2
     return abs(x1 - x2) + abs(y1 - y2)
 
+<<<<<<< HEAD
+=======
+def reconstruct_path(came_from, current, draw):
+    while current in came_from:
+        current = came_from[current]
+        current.make_path()
+        draw()
+
+>>>>>>> parent of be925a0 (k)
 def algorithm(draw, grid, start, end):
     count = 0
     open_set = PriorityQueue()
@@ -209,6 +213,12 @@ def algorithm(draw, grid, start, end):
         open_set_hash.remove(current)
 
         if current == end:
+<<<<<<< HEAD
+=======
+            reconstruct_path(came_from, end, draw)
+            end.make_end()
+            start.make_start()
+>>>>>>> parent of be925a0 (k)
             return True
 
         for neighbor  in current.neighbors:
@@ -230,7 +240,11 @@ def algorithm(draw, grid, start, end):
         if current != start:
             current.make_closed()
 
+<<<<<<< HEAD
         return False
+=======
+    return False
+>>>>>>> parent of be925a0 (k)
 
 def make_grid():
     grid = []
@@ -258,76 +272,66 @@ def draw(grid):
             spot.draw()
 
     draw_grid()
+<<<<<<< HEAD
 >>>>>>> parent of 640120c (Update main.py)
+=======
+>>>>>>> parent of be925a0 (k)
     pg.display.update()
 
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            run = False
-            pg.quit()
-            sys.exit()
-            pg.display.update()
+def get_clicked_pos(pos):
+    y, x = pos
 
-        if event.type == pg.K_r:
-            resetGrid()
+    row = y // BlockSize
+    col = x // BlockSize
 
-        elif event.type == pg.MOUSEBUTTONDOWN and event.button == Left:
-            pos = pg.mouse.get_pos()
-            row = (pos[0] // BlockSize) + 1
-            colom = (pos[1] // BlockSize) + 1
-            moving = True
-            LEFT = True
-            RIGHT = False
+    return row, col
 
-            ColorGrid(row, colom)
-            print("Click ", pos, "Grid coordinates: ", row, colom)
-            print(moving)
+def main():
+    grid = make_grid()
 
-        elif event.type == pg.MOUSEBUTTONDOWN and event.button == Right:
-            pos = pg.mouse.get_pos()
-            row = (pos[0] // BlockSize) + 1
-            colom = (pos[1] // BlockSize) + 1
-            moving = True
-            LEFT = False
-            RIGHT = True
+    start = None
+    end = None
+    run = True
+    started = False
 
-            WhiteGrid(row, colom)
-            print("Click ", pos, "Grid coordinates: ", row, colom)
-            print(moving)
+    while run:
+        draw(grid)
 
-        elif event.type == pg.MOUSEBUTTONUP:
-            moving = False
-            print(moving)
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                run = False
+            
+            if started:
+                continue
 
-        elif event.type == pg.MOUSEMOTION and moving and LEFT:
-            pos = pg.mouse.get_pos()
-            row = (pos[0] // BlockSize) + 1
-            colom = (pos[1] // BlockSize) + 1
+            if pg.mouse.get_pressed()[0]:
+                pos = pg.mouse.get_pos()
+                rij, kolom = get_clicked_pos(pos)
+                spot = grid[rij][kolom]
 
-            ColorGrid(row, colom)
-            print("Click ", pos, "Grid coordinates: ", row, colom)
-        
-        elif event.type == pg.MOUSEMOTION and moving and RIGHT:
-            pos = pg.mouse.get_pos()
-            row = (pos[0] // BlockSize) + 1
-            colom = (pos[1] // BlockSize) + 1
+                if not start and spot != end:
+                    start = spot
+                    start.make_start()
 
-            WhiteGrid(row, colom)
-            print("Click ", pos, "Grid coordinates: ", row, colom)
+                elif not end and spot != start:
+                    end = spot
+                    end.make_end()
 
-    keys = pg.key.get_pressed()
-    if keys[K_ESCAPE]:
-        run=False
-        pg.quit()
-        sys.exit()
-        pg.display.update()
+                elif spot != end and spot != start :
+                    spot.make_black()
 
-    if keys[K_r]:
-        resetGrid()
+            elif pg.mouse.get_pressed()[2]:
+                pos = pg.mouse.get_pos()
+                rij, kolom = get_clicked_pos(pos)
+                spot = grid[rij][kolom]
+                spot.reset()
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     pg.display.update()
 =======
+=======
+>>>>>>> parent of be925a0 (k)
                 if spot == start:
                     start = None
 
@@ -342,11 +346,23 @@ def draw(grid):
                             spot.update_neighbors(grid)
 
                     algorithm(lambda: draw(grid), grid, start, end)
+<<<<<<< HEAD
+=======
+
+                if event.key == pg.K_c:
+                    start = None
+                    end = None
+                    grid = make_grid()
+>>>>>>> parent of be925a0 (k)
                 
                 if event.key == pg.K_ESCAPE:
                     run = False
 
     pg.quit()       
 
+<<<<<<< HEAD
 main()
 >>>>>>> parent of 640120c (Update main.py)
+=======
+main()
+>>>>>>> parent of be925a0 (k)
