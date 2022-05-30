@@ -1,7 +1,6 @@
 from shutil import move
 from tkinter.font import ROMAN
 from turtle import right, st
-from numpy import blackman
 import pygame as pg
 import math
 import sys
