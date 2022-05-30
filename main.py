@@ -1,6 +1,5 @@
 from shutil import move
-from tkinter.font import ROMAN
-from turtle import right, st
+from turtle import right
 from numpy import blackman
 import pygame as pg
 import math
@@ -14,19 +13,15 @@ from pygame.constants import K_ESCAPE
 from pygame.constants import K_r
 
 # Variables #
-Row = 15
-Colom = 15
+Row = 10
+Colom = 10
 BlockSize = 50
-
-FPS = 60
 
 # Colors #
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-GREEN = (0, 255, 0) 
+GREEN = (0, 255, 0)
 LIGHT_GREEN = (144,238,144)
-LIGHT_BLUE = (173, 216, 230)
-LIGHT_RED = (255, 204, 203)
 RED = (255, 0, 0)
 GRAY = (128, 128, 128)
 PURPLE = (165, 137, 193)
@@ -38,49 +33,94 @@ Window_height =  Colom * BlockSize
 Window_width = Row * BlockSize
 
 Window = pg.display.set_mode((Window_width, Window_height))
+Window.fill (WHITE)
+Surface = pg.display.set_mode((Window_height, Window_width))
+Surface.fill(WHITE)
+
+image = pg.display.get_surface()
 pg.display.set_caption("Path Of Exile")
-           
+
+clock = pg.time.Clock()
+clock.tick(FPS)
+
+# Rechter / Linker muisknop #
+moving = False
+Left = 1
+Right = 3
+LEFT = False
+RIGHT = False
+
+# Draw Grid #
+def drawGrid():
+    for x in range(0, Window_width, BlockSize):
+        for y in range(0, Window_height, BlockSize):
+            rect = pg.Rect(x, y, BlockSize, BlockSize)
+            pg.draw.rect(Window, BLACK, rect, 1)
+            
+# Color The Grid #
+def ColorGrid (row, colom):
+    Coord_x = (row - 1) * BlockSize
+    Coord_y = (colom - 1) * BlockSize
+    print("Coord X:", Coord_x, "Coord Y:", Coord_y) 
+
+    rect_green = pg.Rect(Coord_x, Coord_y, BlockSize, BlockSize)
+    image.fill(BLACK, rect_green)
+
+# Color White #
+def WhiteGrid (row, colom):
+    Coord_x = (row - 1) * BlockSize
+    Coord_y = (colom - 1) * BlockSize
+    print("C             oord X:", Coord_x, "Coord Y:", Coord_y) 
+
+    rect_green = pg.Rect(Coord_x, Coord_y, BlockSize, BlockSize)
+    image.fill(WHITE, rect_green)
+
+# Reset Grid #
+def resetGrid():
+    Window.fill(WHITE)
+    Surface.fill(WHITE)
+    drawGrid()
+    pg.display.update()
+
 # A* Class #
-class Spot:
-    def __init__ (self, rij, kolom, total_Rows, total_Col):
+class Node:
+    def__init__(self, rij, kolom, hoogte, breete, total_Rows):
         self.rij = rij
         self.kolom = kolom
-        self.x = rij * BlockSize 
-        self.y =  kolom * BlockSize
+        self.x = rij * breete 
+        self.y =  kolom * hoogte
         self.color = WHITE
-        self.neighbors = []
+        self.neigbors = []
+        self.hoogte = hoogte
+        self.breete = breete
         self.total_Rows = total_Rows
-        self.total_Col = total_Col
     
-    def get_pos(self):
+    def get_posision(self):
         return  self.rij, self.kolom
 
     def is_closed(self):
         return self.color == LIGHT_GREEN
 
     def is_open(self):
-        return self.color == LIGHT_RED
+        return self.color == GRAY
 
     def is_black(self):
         return self.color == BLACK
 
-    def is_start(self):
+    def is_strat(self):
         return self.color == GREEN
 
     def is_end(self):
         return self.color == RED
 
     def reset(self): 
-        self.color = WHITE
-
-    def make_start(self):
-        self.color = GREEN
+        self.color == WHITE
 
     def make_closed(self):
         self.color = LIGHT_GREEN
 
     def make_open(self):
-        self.color = LIGHT_RED
+        self.color = GRAY
 
     def make_black(self):
         self.color = BLACK
@@ -89,187 +129,78 @@ class Spot:
         self.color = RED
     
     def make_path(self):
-        self.color = LIGHT_BLUE
+        self.color = PURPLE
+    
 
-    def draw(self):
-        pg.draw.rect(Window, self.color, (self.x, self.y, BlockSize, BlockSize))
+# Run Loop #
+run=True
 
-    def update_neighbors(self, grid):
-        self.neighbors = []
-
-        if self.rij < self.total_Rows - 1 and not grid[self.rij + 1][self.kolom].is_black(): #Onder
-            self.neighbors.append(grid[self.rij + 1][self.kolom])
-
-        if self.rij > 0 and not grid[self.rij - 1][self.kolom].is_black(): #Boven
-            self.neighbors.append(grid[self.rij - 1][self.kolom])
-
-        if self.kolom < self.total_Col - 1 and not grid[self.rij][self.kolom + 1].is_black(): #Rechts
-            self.neighbors.append(grid[self.rij][self.kolom + 1])
-
-        if self.kolom > 0 and not grid[self.rij][self.kolom - 1].is_black(): #Links
-            self.neighbors.append(grid[self.rij][self.kolom - 1])
-
-    def __Lt__(self, other):
-        return False
-
-def h(p1, p2):
-    x1, y1 = p1
-    x2, y2 = p2
-    return abs(x1 - x2) + abs(y1 - y2)
-
-def reconstruct_path(came_from, current, draw):
-    while current in came_from:
-        current = came_from[current]
-        current.make_path()
-        draw()
-
-def algorithm(draw, grid, start, end):
-    count = 0
-    open_set = PriorityQueue()
-    open_set.put((0, count, start))
-    came_from = {}
-
-    g_score = {spot: float("inf") for row in grid for spot in row}
-    g_score[start] = 0
-    f_score = {spot: float("inf") for row in grid for spot in row}
-    f_score[start] = h(start.get_pos(), end.get_pos())
-
-    open_set_hash = {start}
-
-    while not open_set.empty():
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                pg.quit()
-
-        current = open_set.get()[2]
-        open_set_hash.remove(current)
-
-        if current == end:
-            reconstruct_path(came_from, end, draw)
-            end.make_end()
-            start.make_start()
-            return True
-
-        for neighbor  in current.neighbors:
-            temp_g_score = g_score[current] + 1
-
-            if temp_g_score < g_score[neighbor]:
-                came_from[neighbor] = current
-                g_score[neighbor] = temp_g_score
-                f_score[neighbor] = temp_g_score + h(neighbor.get_pos(), end.get_pos())
-				
-                if neighbor not in open_set_hash:
-                    count += 1
-                    open_set.put((f_score[neighbor], count, neighbor))
-                    open_set_hash.add(neighbor)
-                    neighbor.make_open()
-
-        draw()
-
-        if current != start:
-            current.make_closed()
-
-    return False
-
-def make_grid():
-    grid = []
-
-    for i in range(Row):
-        grid.append([])
-        for j in range(Colom):
-            spot = Spot(i, j, Row, Colom)
-            grid[i].append(spot)
-
-    return grid       
-
-def draw_grid():
-
-    for i in range(Colom):
-        pg.draw.line(Window, GRAY, (0, i * BlockSize), (Window_width, i * BlockSize))
-        for j in range(Row):
-            pg.draw.line(Window, GRAY, (j * BlockSize, 0), (j * BlockSize, Window_height))
-
-def draw(grid):
-    Window.fill(WHITE)
-
-    for rij in grid:
-        for spot in rij:
-            spot.draw()
-
-    draw_grid()
+while run:
+    drawGrid()
     pg.display.update()
 
-def get_clicked_pos(pos):
-    y, x = pos
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            run = False
+            pg.quit()
+            sys.exit()
+            pg.display.update()
 
-    row = y // BlockSize
-    col = x // BlockSize
+        if event.type == pg.K_r:
+            resetGrid()
 
-    return row, col
+        elif event.type == pg.MOUSEBUTTONDOWN and event.button == Left:
+            pos = pg.mouse.get_pos()
+            row = (pos[0] // BlockSize) + 1
+            colom = (pos[1] // BlockSize) + 1
+            moving = True
+            LEFT = True
+            RIGHT = False
 
-def main():
-    grid = make_grid()
+            ColorGrid(row, colom)
+            print("Click ", pos, "Grid coordinates: ", row, colom)
+            print(moving)
 
-    start = None
-    end = None
-    run = True
-    started = False
+        elif event.type == pg.MOUSEBUTTONDOWN and event.button == Right:
+            pos = pg.mouse.get_pos()
+            row = (pos[0] // BlockSize) + 1
+            colom = (pos[1] // BlockSize) + 1
+            moving = True
+            LEFT = False
+            RIGHT = True
 
-    while run:
-        draw(grid)
+            WhiteGrid(row, colom)
+            print("Click ", pos, "Grid coordinates: ", row, colom)
+            print(moving)
 
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                run = False
-            
-            if started:
-                continue
+        elif event.type == pg.MOUSEBUTTONUP:
+            moving = False
+            print(moving)
 
-            if pg.mouse.get_pressed()[0]:
-                pos = pg.mouse.get_pos()
-                rij, kolom = get_clicked_pos(pos)
-                spot = grid[rij][kolom]
+        elif event.type == pg.MOUSEMOTION and moving and LEFT:
+            pos = pg.mouse.get_pos()
+            row = (pos[0] // BlockSize) + 1
+            colom = (pos[1] // BlockSize) + 1
 
-                if not start and spot != end:
-                    start = spot
-                    start.make_start()
+            ColorGrid(row, colom)
+            print("Click ", pos, "Grid coordinates: ", row, colom)
+        
+        elif event.type == pg.MOUSEMOTION and moving and RIGHT:
+            pos = pg.mouse.get_pos()
+            row = (pos[0] // BlockSize) + 1
+            colom = (pos[1] // BlockSize) + 1
 
-                elif not end and spot != start:
-                    end = spot
-                    end.make_end()
+            WhiteGrid(row, colom)
+            print("Click ", pos, "Grid coordinates: ", row, colom)
 
-                elif spot != end and spot != start :
-                    spot.make_black()
+    keys = pg.key.get_pressed()
+    if keys[K_ESCAPE]:
+        run=False
+        pg.quit()
+        sys.exit()
+        pg.display.update()
 
-            elif pg.mouse.get_pressed()[2]:
-                pos = pg.mouse.get_pos()
-                rij, kolom = get_clicked_pos(pos)
-                spot = grid[rij][kolom]
-                spot.reset()
+    if keys[K_r]:
+        resetGrid()
 
-                if spot == start:
-                    start = None
-
-                elif spot == end:
-                    end = None
-
-            if event.type == pg.KEYDOWN:
-
-                if event.key == pg.K_SPACE and start and end:
-                    for rij in grid:
-                        for spot in rij:
-                            spot.update_neighbors(grid)
-
-                    algorithm(lambda: draw(grid), grid, start, end)
-
-                if event.key == pg.K_c:
-                    start = None
-                    end = None
-                    grid = make_grid()
-                
-                if event.key == pg.K_ESCAPE:
-                    run = False
-
-    pg.quit()       
-
-main()
+    pg.display.update()
