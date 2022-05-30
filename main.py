@@ -99,44 +99,166 @@ class Node:
         return  self.rij, self.kolom
 
     def is_closed(self):
-        return self.color == LIGHT_GREEN
+        return self.color == RED
 
     def is_open(self):
+<<<<<<< HEAD
         return self.color == GRAY
+=======
+        return self.color == GREEN
+>>>>>>> parent of 640120c (Update main.py)
 
     def is_black(self):
         return self.color == BLACK
 
+<<<<<<< HEAD
     def is_strat(self):
         return self.color == GREEN
+=======
+    def is_start(self):
+        return self.color == LIGHT_GREEN
+>>>>>>> parent of 640120c (Update main.py)
 
     def is_end(self):
-        return self.color == RED
+        return self.color == GRAY
 
     def reset(self): 
+<<<<<<< HEAD
         self.color == WHITE
 
     def make_closed(self):
+=======
+        self.color = WHITE
+
+    def make_start(self):
+>>>>>>> parent of 640120c (Update main.py)
         self.color = LIGHT_GREEN
 
+    def make_closed(self):
+        self.color = RED
+
     def make_open(self):
+<<<<<<< HEAD
         self.color = GRAY
+=======
+        self.color = GREEN
+>>>>>>> parent of 640120c (Update main.py)
 
     def make_black(self):
         self.color = BLACK
 
     def make_end(self):
-        self.color = RED
+        self.color = PURPLE
     
     def make_path(self):
         self.color = PURPLE
+<<<<<<< HEAD
     
+=======
+>>>>>>> parent of 640120c (Update main.py)
 
 # Run Loop #
 run=True
 
+<<<<<<< HEAD
 while run:
     drawGrid()
+=======
+    def update_neighbors(self, grid):
+        self.neigbors = []
+
+        if self.rij < self.total_Rows - 1 and not grid[self.rij + 1][self.kolom].is_black(): #Onder
+            self.neigbors.append(grid[self.rij + 1][self.kolom])
+
+        if self.rij > 0 and not grid[self.rij - 1][self.kolom].is_black(): #Boven
+            self.neigbors.append(grid[self.rij - 1][self.kolom])
+
+        if self.kolom < self.total_Rows - 1 and not grid[self.rij][self.kolom + 1].is_black(): #Rechts
+            self.neigbors.append(grid[self.rij][self.kolom + 1])
+
+        if self.kolom > 0 and not grid[self.rij][self.kolom - 1].is_black(): #Links
+            self.neigbors.append(grid[self.rij][self.kolom - 1])
+
+    def __Lt__(self, other):
+        return False
+
+def h(p1, p2):
+    x1, y1 = p1
+    x2, y2 = p2
+    return abs(x1 - x2) + abs(y1 - y2)
+
+def algorithm(draw, grid, start, end):
+    count = 0
+    open_set = PriorityQueue()
+    open_set.put((0, count, start))
+    came_from = {}
+
+    g_score = {spot: float("inf") for row in grid for spot in row}
+    g_score[start] = 0
+    f_score = {spot: float("inf") for row in grid for spot in row}
+    f_score[start] = h(start.get_pos(), end.get_pos())
+
+    open_set_hash = {start}
+
+    while not open_set.empty():
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+
+        current = open_set.get()[2]
+        open_set_hash.remove(current)
+
+        if current == end:
+            return True
+
+        for neighbor  in current.neighbors:
+            temp_g_score = g_score[current] + 1
+
+            if temp_g_score < g_score[neighbor]:
+                came_from[neighbor] = current
+                g_score[neighbor] = temp_g_score
+                f_score[neighbor] = temp_g_score + h(neighbor.get_pos(), end.get_pos())
+				
+                if neighbor not in open_set_hash:
+                    count += 1
+                    open_set.put((f_score[neighbor], count, neighbor))
+                    open_set_hash.add(neighbor)
+                    neighbor.make_open()
+
+        draw()
+
+        if current != start:
+            current.make_closed()
+
+        return False
+
+def make_grid():
+    grid = []
+
+    for i in range(Row):
+        grid.append([])
+        for j in range(Colom):
+            spot = Spot(i, j, Row, Colom)
+            grid[i].append(spot)
+
+    return grid       
+
+def draw_grid():
+
+    for i in range(Colom):
+        pg.draw.line(Window, GRAY, (0, i * BlockSize), (Window_width, i * BlockSize))
+        for j in range(Row):
+            pg.draw.line(Window, GRAY, (j * BlockSize, 0), (j * BlockSize, Window_height))
+
+def draw(grid):
+    Window.fill(WHITE)
+
+    for rij in grid:
+        for spot in rij:
+            spot.draw()
+
+    draw_grid()
+>>>>>>> parent of 640120c (Update main.py)
     pg.display.update()
 
     for event in pg.event.get():
@@ -203,4 +325,28 @@ while run:
     if keys[K_r]:
         resetGrid()
 
+<<<<<<< HEAD
     pg.display.update()
+=======
+                if spot == start:
+                    start = None
+
+                elif spot == end:
+                    end = None
+
+            if event.type == pg.KEYDOWN:
+
+                if event.key == pg.K_SPACE and start and end:
+                    for rij in grid:
+                        for spot in rij:
+                            spot.update_neighbors(grid)
+
+                    algorithm(lambda: draw(grid), grid, start, end)
+                
+                if event.key == pg.K_ESCAPE:
+                    run = False
+
+    pg.quit()       
+
+main()
+>>>>>>> parent of 640120c (Update main.py)
