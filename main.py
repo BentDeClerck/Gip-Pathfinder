@@ -54,110 +54,44 @@ class Spot:
         return  self.rij, self.kolom
 
     def is_closed(self):
-        return self.color == RED
+        return self.color == LIGHT_GREEN
 
     def is_open(self):
-<<<<<<< HEAD
-<<<<<<< HEAD
-        return self.color == GRAY
-=======
-        return self.color == GREEN
->>>>>>> parent of 640120c (Update main.py)
-=======
         return self.color == LIGHT_RED
->>>>>>> parent of be925a0 (k)
 
     def is_black(self):
         return self.color == BLACK
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    def is_strat(self):
-=======
     def is_start(self):
->>>>>>> parent of be925a0 (k)
         return self.color == GREEN
-=======
-    def is_start(self):
-        return self.color == LIGHT_GREEN
->>>>>>> parent of 640120c (Update main.py)
 
     def is_end(self):
-        return self.color == GRAY
+        return self.color == RED
 
     def reset(self): 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        self.color == WHITE
-=======
         self.color = WHITE
 
     def make_start(self):
         self.color = GREEN
->>>>>>> parent of be925a0 (k)
 
     def make_closed(self):
-=======
-        self.color = WHITE
-
-    def make_start(self):
->>>>>>> parent of 640120c (Update main.py)
         self.color = LIGHT_GREEN
 
-    def make_closed(self):
-        self.color = RED
-
     def make_open(self):
-<<<<<<< HEAD
-<<<<<<< HEAD
-        self.color = GRAY
-=======
-        self.color = GREEN
->>>>>>> parent of 640120c (Update main.py)
-=======
         self.color = LIGHT_RED
->>>>>>> parent of be925a0 (k)
 
     def make_black(self):
         self.color = BLACK
 
     def make_end(self):
-        self.color = PURPLE
+        self.color = RED
     
     def make_path(self):
-<<<<<<< HEAD
-        self.color = PURPLE
-<<<<<<< HEAD
-    
-=======
->>>>>>> parent of 640120c (Update main.py)
-=======
         self.color = LIGHT_BLUE
->>>>>>> parent of be925a0 (k)
 
     def draw(self):
         pg.draw.rect(Window, self.color, (self.x, self.y, BlockSize, BlockSize))
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-while run:
-    drawGrid()
-=======
-    def update_neighbors(self, grid):
-        self.neigbors = []
-
-        if self.rij < self.total_Rows - 1 and not grid[self.rij + 1][self.kolom].is_black(): #Onder
-            self.neigbors.append(grid[self.rij + 1][self.kolom])
-
-        if self.rij > 0 and not grid[self.rij - 1][self.kolom].is_black(): #Boven
-            self.neigbors.append(grid[self.rij - 1][self.kolom])
-
-        if self.kolom < self.total_Rows - 1 and not grid[self.rij][self.kolom + 1].is_black(): #Rechts
-            self.neigbors.append(grid[self.rij][self.kolom + 1])
-
-        if self.kolom > 0 and not grid[self.rij][self.kolom - 1].is_black(): #Links
-            self.neigbors.append(grid[self.rij][self.kolom - 1])
-=======
     def update_neighbors(self, grid):
         self.neighbors = []
 
@@ -172,7 +106,6 @@ while run:
 
         if self.kolom > 0 and not grid[self.rij][self.kolom - 1].is_black(): #Links
             self.neighbors.append(grid[self.rij][self.kolom - 1])
->>>>>>> parent of be925a0 (k)
 
     def __Lt__(self, other):
         return False
@@ -182,15 +115,12 @@ def h(p1, p2):
     x2, y2 = p2
     return abs(x1 - x2) + abs(y1 - y2)
 
-<<<<<<< HEAD
-=======
 def reconstruct_path(came_from, current, draw):
     while current in came_from:
         current = came_from[current]
         current.make_path()
         draw()
 
->>>>>>> parent of be925a0 (k)
 def algorithm(draw, grid, start, end):
     count = 0
     open_set = PriorityQueue()
@@ -213,12 +143,9 @@ def algorithm(draw, grid, start, end):
         open_set_hash.remove(current)
 
         if current == end:
-<<<<<<< HEAD
-=======
             reconstruct_path(came_from, end, draw)
             end.make_end()
             start.make_start()
->>>>>>> parent of be925a0 (k)
             return True
 
         for neighbor  in current.neighbors:
@@ -240,11 +167,7 @@ def algorithm(draw, grid, start, end):
         if current != start:
             current.make_closed()
 
-<<<<<<< HEAD
-        return False
-=======
     return False
->>>>>>> parent of be925a0 (k)
 
 def make_grid():
     grid = []
@@ -272,10 +195,6 @@ def draw(grid):
             spot.draw()
 
     draw_grid()
-<<<<<<< HEAD
->>>>>>> parent of 640120c (Update main.py)
-=======
->>>>>>> parent of be925a0 (k)
     pg.display.update()
 
 def get_clicked_pos(pos):
@@ -326,12 +245,6 @@ def main():
                 spot = grid[rij][kolom]
                 spot.reset()
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    pg.display.update()
-=======
-=======
->>>>>>> parent of be925a0 (k)
                 if spot == start:
                     start = None
 
@@ -346,23 +259,15 @@ def main():
                             spot.update_neighbors(grid)
 
                     algorithm(lambda: draw(grid), grid, start, end)
-<<<<<<< HEAD
-=======
 
                 if event.key == pg.K_c:
                     start = None
                     end = None
                     grid = make_grid()
->>>>>>> parent of be925a0 (k)
                 
                 if event.key == pg.K_ESCAPE:
                     run = False
 
     pg.quit()       
 
-<<<<<<< HEAD
 main()
->>>>>>> parent of 640120c (Update main.py)
-=======
-main()
->>>>>>> parent of be925a0 (k)
