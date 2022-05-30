@@ -7,9 +7,7 @@ import math
 import sys
 from queue import PriorityQueue
 from pygame import display
-from pygame import surface
 from pygame.locals import *
-from pygame.draw import rect
 from pygame.constants import K_ESCAPE
 from pygame.constants import K_r
 
@@ -17,8 +15,6 @@ from pygame.constants import K_r
 Row = 15
 Colom = 15
 BlockSize = 50
-
-FPS = 60
 
 # Colors #
 BLACK = (0, 0, 0)
@@ -112,17 +108,20 @@ class Spot:
     def __Lt__(self, other):
         return False
 
+# h(n) element #
 def h(p1, p2):
     x1, y1 = p1
     x2, y2 = p2
     return abs(x1 - x2) + abs(y1 - y2)
 
+# Reconstrueren van pad #
 def reconstruct_path(came_from, current, draw):
     while current in came_from:
         current = came_from[current]
         current.make_path()
         draw()
 
+# Algoritme #
 def algorithm(draw, grid, start, end):
     count = 0
     open_set = PriorityQueue()
@@ -171,6 +170,7 @@ def algorithm(draw, grid, start, end):
 
     return False
 
+# Grid maker #
 def make_grid():
     grid = []
 
@@ -182,6 +182,7 @@ def make_grid():
 
     return grid       
 
+# Grid schilder #
 def draw_grid():
 
     for i in range(Colom):
@@ -189,6 +190,7 @@ def draw_grid():
         for j in range(Row):
             pg.draw.line(Window, GRAY, (j * BlockSize, 0), (j * BlockSize, Window_height))
 
+# Tekenen van een spot #
 def draw(grid):
     Window.fill(WHITE)
 
@@ -199,6 +201,7 @@ def draw(grid):
     draw_grid()
     pg.display.update()
 
+# Positie van click #
 def get_clicked_pos(pos):
     y, x = pos
 
@@ -207,6 +210,7 @@ def get_clicked_pos(pos):
 
     return row, col
 
+# Main #
 def main():
     grid = make_grid()
 
