@@ -1,14 +1,8 @@
-from shutil import move
-from tkinter.font import ROMAN
-from turtle import right, st
 import pygame as pg
 import math
 import sys
 from queue import PriorityQueue
-from pygame import display
-from pygame import surface
 from pygame.locals import *
-from pygame.draw import rect
 from pygame.constants import K_ESCAPE
 from pygame.constants import K_r
 
