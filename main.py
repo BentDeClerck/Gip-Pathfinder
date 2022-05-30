@@ -7,7 +7,7 @@ from pygame.constants import K_ESCAPE
 from pygame.constants import K_r
 
 # Variables #
-Row = 15
+Row = 20
 Colom = 15
 BlockSize = 50
 
